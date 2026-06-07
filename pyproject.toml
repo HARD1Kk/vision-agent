@@ -1,0 +1,29 @@
+[project]
+name = "VisionAgent"
+version = "0.1.0"
+description = "AI agent that uses screenshots, mouse, and keyboard controls to complete tasks from natural language instructions."
+readme = "README.md"
+requires-python = ">=3.13"
+
+dependencies = [
+    "google-genai==2.8.0",
+    "langgraph==1.2.4",
+    "pillow==12.2.0",
+    "pyautogui==0.9.54",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.1",
+]
+[tool.pyright]
+extraPaths = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore=["E501"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "ruff>=0.15.16",
+]
+
+
