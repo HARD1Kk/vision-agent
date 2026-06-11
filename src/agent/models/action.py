@@ -10,6 +10,7 @@ class ActionType(str, Enum):
     SCROLL = "scroll"
     WAIT = "wait"
     DONE = "done"
+    PRESS = "press"
 
 
 class ScrollDirection(str, Enum):
@@ -22,8 +23,8 @@ class Action(BaseModel):
 
     reasoning: str
     action: ActionType
-
-    x: Optional[int] = None
-    y: Optional[int] = None
+    reasoning: str = "No reasoning provided."
+    x: float | None = None
+    y: float | None = None
     text: Optional[str] = None
     direction: ScrollDirection | None = None

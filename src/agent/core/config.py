@@ -1,19 +1,26 @@
 import pyautogui
+from dotenv import load_dotenv
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+load_dotenv()
 
 
 class Settings(BaseSettings):
-    MODEL: str = "gemini-2.5-flash"
+    MODEL: str = "meta-llama/llama-4-scout-17b-16e-instruct"
     MAX_STEPS: int = 15
     WAIT_SECONDS: float = 1.5
     SCREENSHOT_WIDTH: int = 1280
 
-    GEMINI_API_KEY: str = ""
+    GEMINI_API_KEY: str = Field(default="", min_length=1)
+    GROQ_API_KEY: str = Field(default="", min_length=1)
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        extra="ignore",
-    )
+
+model_config = SettingsConfigDict(
+    env_file=".env",
+    env_file_encoding="utf-8",
+    extra="ignore",
+)
 
 
 settings = Settings()

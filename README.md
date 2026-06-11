@@ -1,4 +1,4 @@
-# Vision use agent
+# Vision Agent
 
 An AI agent that controls your computer by moving the mouse, clicking, and typing to complete tasks described in plain English. It operates in a continuous loop: captures a screenshot, asks Gemini for the next action, executes it, and repeats the process until the task is finished. Designed for Python developers, it demonstrates how vision-based computer-use agents function behind the scenes.
 

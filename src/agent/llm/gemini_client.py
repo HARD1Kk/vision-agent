@@ -10,7 +10,7 @@ from agent.prompts.system_prompt import SYSTEM_PROMPT
 
 
 class GeminiBrain:
-    def __init__(self, client: genai.Client,model:str):
+    def __init__(self, client: genai.Client, model: str):
         self.client = client
         self.model = model
 
@@ -45,9 +45,10 @@ if __name__ == "__main__":
 
     from google import genai
     from PIL import Image
+
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
-    brain = GeminiBrain(client,model=settings.MODEL)
+    brain = GeminiBrain(client, model=settings.MODEL)
 
     task = "Open Settings"
     screenshot_path = Path("ss/image.png")
