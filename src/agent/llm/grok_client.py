@@ -2,6 +2,7 @@ import base64
 from io import BytesIO
 
 from groq import Groq
+from loguru import logger
 from PIL import Image
 
 from agent.models.action import Action
@@ -78,7 +79,7 @@ class GroqBrain:
         )
 
         result_string = response.choices[0].message.content
-
+        logger.info(result_string)
         if not result_string:
             raise ValueError("Groq returned an empty response")
 

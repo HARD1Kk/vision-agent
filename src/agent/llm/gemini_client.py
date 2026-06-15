@@ -5,6 +5,7 @@ from google.genai import types
 from PIL import Image
 
 from agent.core.config import settings
+from agent.core.logger import logger
 from agent.models.action import Action
 from agent.prompts.system_prompt import SYSTEM_PROMPT
 
@@ -33,7 +34,7 @@ class GeminiBrain:
             ),
         )
         parsed = response.parsed
-
+        logger.info(parsed)
         if parsed is None:
             raise ValueError("Gemini returned no parsed response")
 

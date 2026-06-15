@@ -1,8 +1,10 @@
+import math
 import time
 
 import pyautogui
 
 from agent.core.config import settings
+from agent.core.logger import logger
 from agent.models import Action, ActionType, ScrollDirection
 
 
@@ -12,107 +14,88 @@ class Executor:
 
         if action.action == ActionType.CLICK:
             if action.x is None or action.y is None:
+                logger.error("Failed CLICK: x and y coordinates are missing.")
                 raise ValueError("Click action requires x and y coordinates")
 
             width, height = pyautogui.size()
 
             # 1. Auto-detect coordinate scale (0.0-1.0 vs 0-1000)
-            # If the number is less than or equal to 1.0, it's a decimal percentage.
-            # If it's greater, the model gave us the 0-1000 scale we asked for.
             norm_x = action.x if action.x <= 1.0 else action.x / 1000.0
             norm_y = action.y if action.y <= 1.0 else action.y / 1000.0
 
-            # 2. Calculate raw pixel coordinates
+            # 2. Calculate raw pixel coordinates for the destination
             raw_x = int(norm_x * width)
             raw_y = int(norm_y * height)
 
-            # 3. Apply Failsafe Bumpers (Keep it 5 pixels inside the screen)
-            x = max(5, min(raw_x, width - 5))
-            y = max(5, min(raw_y, height - 5))
+            # 3. Apply strict screen boundaries (keeps cursor on screen without a dead zone)
+            target_x = max(0, min(raw_x, width - 1))
+            target_y = max(0, min(raw_y, height - 1))
 
-            pyautogui.click(x, y)
-            return f"clicked ({x}, {y})"
+            # 4. Get the starting position before moving
+            start_x, start_y = pyautogui.position()
 
-        if action.action == ActionType.TYPE:
-            if action.text is None:
-                raise ValueError("Type action requires text")
+            # 5. Calculate how far it's about to move
+            dx = target_x - start_x
+            dy = target_y - start_y
+            distance = math.hypot(dx, dy)  # Calculates straight-line pixel distance
 
-            pyautogui.write(action.text or " ", interval=0.02)
-            return f"typed {action.text!r}"
+            # 6. Execute the click
+            pyautogui.click(target_x, target_y)
+
+            # 7. Generate the detailed log string
+            log_string = (
+                f"Action: CLICK | "
+                f"Moved: {distance:.1f}px (Δx:{dx}, Δy:{dy}) | "
+                f"Destination: ({target_x}, {target_y})"
+            )
+
+            # Print to console so you can see it live (optional)
+            logger.info(log_string)
+
+            return log_string
 
         if action.action == ActionType.SCROLL:
             if action.direction is None:
+                logger.error("Failed SCROLL: Direction is missing.")
                 raise ValueError("Scroll action requires direction")
             clicks = -500 if action.direction == ScrollDirection.DOWN else 500
             pyautogui.scroll(clicks)
+
+            log_string = f"Action: SCROLL | Direction: {action.direction.value} ({clicks} clicks)"
+            logger.info(log_string)
 
             return f"scrolled {action.direction.value}"
 
         if action.action == ActionType.WAIT:
             time.sleep(settings.WAIT_SECONDS)
+
+            log_string = f"Action: WAIT | Duration: {settings.WAIT_SECONDS}s"
+            logger.info(log_string)
             return f"waited {settings.WAIT_SECONDS}s"
 
         if action.action == ActionType.PRESS:
             if not action.text:
+                logger.error("Failed PRESS: Key name missing in 'text' field.")
                 raise ValueError("Press action requires a key name in the 'text' field")
 
             # PyAutoGUI expects lowercase key names (e.g., 'enter' not 'Enter')
             key_to_press = action.text.strip().lower()
-
             pyautogui.press(key_to_press)
+            logger.info(f"Action: PRESS | Key: '{key_to_press}'")
             return f"pressed '{key_to_press}'"
+
+        if action.action == ActionType.HOTKEY:
+            keys_to_press = action.text
+
+            if not keys_to_press:
+                logger.error("Failed to execute HOTKEY: No keys provided by the agent.")
+                raise ValueError("Hotkey action requires keys to press.")
+
+            if isinstance(keys_to_press, str):
+                keys_to_press = [
+                    k.strip() for k in keys_to_press.replace("+", ",").split(",")
+                ]
+
+            logger.info(f"Action: HOTKEY | Keys: {keys_to_press}")
+            pyautogui.hotkey(*keys_to_press)
         return str(ActionType.DONE.value)
-
-
-if __name__ == "__main__":
-    from agent.models.action import (
-        Action,
-        ActionType,
-        ScrollDirection,
-    )
-
-    executor = Executor()
-
-    # Test Click
-    action = Action(
-        reasoning="Testing click",
-        action=ActionType.CLICK,
-        x=500,
-        y=500,
-    )
-
-    print(executor.execute_action(action))
-
-    # Test Type
-    action = Action(
-        reasoning="Testing type",
-        action=ActionType.TYPE,
-        text="Hello World!",
-    )
-
-    print(executor.execute_action(action))
-
-    # Test Scroll
-    action = Action(
-        reasoning="Testing scroll",
-        action=ActionType.SCROLL,
-        direction=ScrollDirection.DOWN,
-    )
-
-    print(executor.execute_action(action))
-
-    # Test Wait
-    action = Action(
-        reasoning="Testing wait",
-        action=ActionType.WAIT,
-    )
-
-    print(executor.execute_action(action))
-
-    # Test Done
-    action = Action(
-        reasoning="Testing done",
-        action=ActionType.DONE,
-    )
-
-    print(executor.execute_action(action))

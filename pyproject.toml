@@ -8,7 +8,9 @@ requires-python = ">=3.13"
 dependencies = [
     "google-genai==2.8.0",
     "groq>=1.4.0",
+    "ipython>=9.14.1",
     "langgraph==1.2.4",
+    "loguru>=0.7.3",
     "pillow==12.2.0",
     "pyautogui==0.9.54",
     "pydantic>=2.13.4",

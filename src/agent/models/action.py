@@ -11,6 +11,7 @@ class ActionType(str, Enum):
     WAIT = "wait"
     DONE = "done"
     PRESS = "press"
+    HOTKEY = "hotkey"
 
 
 class ScrollDirection(str, Enum):

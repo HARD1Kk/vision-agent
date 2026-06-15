@@ -1,3 +1,4 @@
+from IPython.display import Image, display
 from langgraph.graph import END, START, StateGraph
 
 from agent.nodes.analyze import analyze_screenshot_node
@@ -37,3 +38,6 @@ workflow.add_conditional_edges("execute_step", should_continue)
 
 # 6. Compile the workflow into an executable application
 app = workflow.compile()
+
+# Display the PNG image directly
+display(Image(app.get_graph().draw_mermaid_png()))
