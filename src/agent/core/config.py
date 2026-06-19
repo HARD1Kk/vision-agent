@@ -7,7 +7,8 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    MODEL: str = "meta-llama/llama-4-scout-17b-16e-instruct"
+    TEXT_MODEL: str = "llama-3.3-70b-versatile"
+    VISION_MODEL: str = "llama-3.2-90b-vision-preview"
     MAX_STEPS: int = 15
     WAIT_SECONDS: float = 1.5
     SCREENSHOT_WIDTH: int = 1280

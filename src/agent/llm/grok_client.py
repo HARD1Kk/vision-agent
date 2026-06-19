@@ -72,7 +72,7 @@ class GroqBrain:
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
-            temperature=0.1,  # Low temperature is best for agentic decision making
+            temperature=0.1,
             max_tokens=1024,
             # Force the model to return valid JSON
             response_format={"type": "json_object"},

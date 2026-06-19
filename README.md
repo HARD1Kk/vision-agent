@@ -15,3 +15,8 @@ Python 3.13
 ## Read Article to understand about Vision AI Agents
 
 [Vision AI Agents](https://www.labellerr.com/blog/vision-ai-agents-how-they-work-examples/)
+
+
+TODO:
+    separating models for image analyses and logic 
+    for better thinking and output.

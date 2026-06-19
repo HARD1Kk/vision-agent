@@ -6,6 +6,7 @@ import pyautogui
 from agent.core.config import settings
 from agent.core.logger import logger
 from agent.models import Action, ActionType, ScrollDirection
+from agent.utils.keyboard_utils import parse_and_validate_hotkey
 
 
 class Executor:
@@ -85,17 +86,17 @@ class Executor:
             return f"pressed '{key_to_press}'"
 
         if action.action == ActionType.HOTKEY:
-            keys_to_press = action.text
+            try:
+                # Send the raw text to the utility file
+                parsed_keys = parse_and_validate_hotkey(action.text)
 
-            if not keys_to_press:
-                logger.error("Failed to execute HOTKEY: No keys provided by the agent.")
-                raise ValueError("Hotkey action requires keys to press.")
+                # If it survives parsing, execute it
+                if parsed_keys:
+                    pyautogui.hotkey(*parsed_keys)
+                    logger.info(f"Action: HOTKEY | Keys: {parsed_keys}")
 
-            if isinstance(keys_to_press, str):
-                keys_to_press = [
-                    k.strip() for k in keys_to_press.replace("+", ",").split(",")
-                ]
+            except ValueError as e:
+                # This catches empty strings AND invalid keys gracefully
+                logger.error(f"Failed to execute HOTKEY: {e}")
 
-            logger.info(f"Action: HOTKEY | Keys: {keys_to_press}")
-            pyautogui.hotkey(*keys_to_press)
         return str(ActionType.DONE.value)
