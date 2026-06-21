@@ -12,6 +12,6 @@ wheels/
 # makrdown files and notes
 *notes
 *docs
-
+logs/
 #secrets
 .env

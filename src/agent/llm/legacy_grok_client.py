@@ -7,7 +7,6 @@ from PIL import Image
 
 from agent.models.action import Action
 from agent.prompts.system_prompt import SYSTEM_PROMPT
-from agent.screen import encode_image
 
 
 class GroqBrain:
@@ -30,7 +29,7 @@ class GroqBrain:
         """Send task + history + screenshot to Groq and return one structured action"""
 
         history_text = "\n".join(f"- {h}" for h in history) or "none yet"
-        base64_image = encode_image(screenshot)
+        base64_image = self._encode_image(screenshot)
 
         # Groq Vision models expect a specific message structure for images
         # Re-structured payload to force Groq to include 'reasoning' and all required keys

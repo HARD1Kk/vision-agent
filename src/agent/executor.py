@@ -85,6 +85,17 @@ class Executor:
             logger.info(f"Action: PRESS | Key: '{key_to_press}'")
             return f"pressed '{key_to_press}'"
 
+        if action.action == ActionType.TYPE:
+            if not action.text:
+                logger.error("Failed TYPE: No text provided.")
+                raise ValueError("Type action requires text to type")
+
+            # The 'interval' adds a small delay between keystrokes so the OS doesn't drop them
+            pyautogui.write(action.text, interval=0.05)
+
+            log_string = f"Action: TYPE | Text: '{action.text}'"
+            logger.info(log_string)
+            return f"typed '{action.text}'"
         if action.action == ActionType.HOTKEY:
             try:
                 # Send the raw text to the utility file
